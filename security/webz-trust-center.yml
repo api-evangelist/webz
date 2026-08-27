@@ -1,0 +1,56 @@
+generated: '2026-08-27'
+method: searched
+source: https://webz.io/trust
+url: https://webz.io/trust
+http_status: 200
+verified: '2026-08-27'
+name: Webz.io Trust Center
+summary: >-
+  A published trust page naming two audited security certifications and two privacy regimes, with the
+  ISO certificate available as a downloadable PDF. It is a static marketing-hosted page rather than a
+  hosted trust-center product (no trust.webz.io — DNS does not resolve), and it carries no security
+  contact, no vulnerability-disclosure policy and no subprocessor list.
+certifications:
+- name: SOC 2
+  status: audit completed
+  evidence: >-
+    "successfully completed the SOC 2 audit, demonstrating commitment to the highest standards of
+    security, confidentiality, and data integrity"
+  report_available: not stated on the page
+- name: ISO 27001
+  status: certified
+  evidence: Certificate linked from the page as a PDF, alongside an IQNET certificate.
+compliance_programs:
+- name: GDPR
+  evidence: Named on the trust page as a "leading and rigorous data protection and privacy regulation" Webz.io complies with.
+- name: CCPA
+  evidence: California Consumer Privacy Act referenced alongside GDPR.
+linked_documents:
+- name: Terms & Conditions
+  url: https://webz.io/tos/
+- name: Privacy Policy
+  url: https://webz.io/privacy/
+- name: Dark Web Policy
+  url: https://webz.io/dark-web-policy/
+- name: Status Page
+  url: https://status.webz.io
+gaps:
+- No security contact or responsible-disclosure policy on the page.
+- No /.well-known/security.txt on any Webz.io host (all 404).
+- No public bug bounty program found on HackerOne, Bugcrowd or Intigriti.
+- No subprocessor list, no penetration-test attestation, no data-residency statement.
+- trust.webz.io does not resolve; the trust content lives on the WordPress marketing site.
+probes:
+- url: https://webz.io/trust
+  status: 200
+- url: https://trust.webz.io
+  status: 0
+  note: connection failed — host does not resolve
+- url: https://webz.io/security
+  status: 404
+- url: https://webz.io/compliance
+  status: 404
+- url: https://webz.io/gdpr
+  status: 404
+- url: https://webz.io/.well-known/security.txt
+  status: 404

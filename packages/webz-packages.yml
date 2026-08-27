@@ -1,0 +1,129 @@
+generated: '2026-08-27'
+method: searched
+source: >-
+  npm registry, PyPI, NuGet, RubyGems, Packagist, crates.io and the Webz.io GitHub organization
+  (https://github.com/Webhose) — the org still carries the company's pre-rename Webhose.io name.
+note: >-
+  Every first-party client library ships from github.com/Webhose. Webz.io was formerly Webhose.io,
+  which is why the GitHub organization and the older packages carry the Webhose name; the newer
+  webzio-* packages are the same libraries renamed. CURRENCY IS THE HEADLINE FINDING: no first-party
+  SDK has been published to any registry since 2022-12-26, while the API surface has since gained the
+  News Search API, the Data Breaches API, the Firehose FH API and an MCP server — none of which any
+  published SDK covers. The Ruby, Cocoa and PHP clients were never published to a registry at all and
+  are GitHub-source-only.
+packages:
+- language: python
+  registry: pypi
+  name: webzio
+  url: https://pypi.org/project/webzio/
+  install: pip install webzio
+  repo: https://github.com/Webhose/webzio-python
+  official: true
+  version: 1.0.2
+  published: '2022-04-17'
+- language: javascript
+  registry: npm
+  name: webzio
+  url: https://www.npmjs.com/package/webzio
+  install: npm install webzio
+  repo: https://github.com/Webhose/webzio-nodejs
+  official: true
+  version: 1.0.5
+  published: '2022-04-17'
+- language: csharp
+  registry: nuget
+  name: webz_io
+  url: https://www.nuget.org/packages/webz_io/
+  install: dotnet add package webz_io
+  repo: https://github.com/Webhose/webzio-dotnet
+  official: true
+  version: 1.0.0
+  published: '2022-12-26'
+- language: python
+  registry: pypi
+  name: webhoseio
+  url: https://pypi.org/project/webhoseio/
+  install: pip install webhoseio
+  repo: https://github.com/Webhose/webhoseio-python
+  official: true
+  deprecated: true
+  version: '0.5'
+  published: '2017-03-30'
+  note: Pre-rename Webhose.io client, superseded by webzio.
+- language: javascript
+  registry: npm
+  name: webhoseio
+  url: https://www.npmjs.com/package/webhoseio
+  install: npm install webhoseio
+  official: true
+  deprecated: true
+  version: 1.0.3
+  published: '2022-04-17'
+  note: Pre-rename Webhose.io client, superseded by webzio.
+- language: java
+  registry: null
+  name: webzio-java-sdk
+  url: https://github.com/Webhose/webzio-java-sdk
+  install: Clone the repository; no Maven Central coordinates are published.
+  official: true
+  version: null
+  published: '2022-02-06'
+  note: >-
+    GitHub source only. A Maven Central search for "webz" did not answer within the probe budget and
+    was not retried; no Maven coordinates are documented anywhere on the Webz.io docs site. version is
+    null because there is no registry release to read — the date given is the last push to the repo.
+- language: php
+  registry: null
+  name: webhoseio-PHP
+  url: https://github.com/Webhose/webhoseio-PHP
+  install: Clone the repository; not published on Packagist (repo.packagist.org returns 404).
+  official: true
+  version: null
+  published: '2022-04-17'
+- language: ruby
+  registry: null
+  name: webzio-ruby
+  url: https://github.com/Webhose/webzio-ruby
+  install: Clone the repository; not published on RubyGems (rubygems.org API returns 404 for webzio).
+  official: true
+  version: null
+  published: '2022-04-17'
+- language: swift
+  registry: null
+  name: webzio-cocoa
+  url: https://github.com/Webhose/webzio-cocoa
+  install: Clone the repository; no CocoaPods/SPM package is published.
+  official: true
+  version: null
+  published: '2022-05-10'
+- language: python
+  registry: null
+  name: webzio-firehose-api-consumer
+  url: https://github.com/Webhose/webzio-firehose-api-consumer
+  install: Clone the repository.
+  official: true
+  version: null
+  published: '2025-07-20'
+  note: Reference consumer for the Firehose (FH) API. Source only, no registry release.
+supporting_repos:
+- name: webz-api-code-examples
+  url: https://github.com/Webhose/webz-api-code-examples
+  description: Code examples and practical use cases for building with the Webz.io APIs.
+  official: true
+- name: article-date-extractor
+  url: https://github.com/Webhose/article-date-extractor
+  description: Extracts and normalizes the publication date of an online article or blog post.
+  official: true
+registries_probed_with_no_result:
+- registry: rubygems
+  queries: [webzio, webhoseio]
+  result: 404
+- registry: packagist
+  queries: [webhose/webhoseio, webzio/webzio]
+  result: 404
+- registry: crates.io
+  queries: [webzio]
+  result: crate does not exist
+- registry: maven-central
+  queries: [webz]
+  result: search.maven.org did not respond within the probe budget; not retried

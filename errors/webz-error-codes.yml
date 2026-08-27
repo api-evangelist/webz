@@ -1,0 +1,166 @@
+generated: '2026-08-27'
+method: searched
+source: >-
+  https://docs.webz.io/docs/webz/news-blogs-forums-errors-limits,
+  https://docs.webz.io/docs/webz/cyber-api-errors-limits,
+  https://docs.webz.io/docs/webz/reviews-api-errors-limits,
+  https://docs.webz.io/docs/webz/data-breach-errors-limits,
+  https://docs.webz.io/docs/webz/news-search-api-errors-limits,
+  https://docs.webz.io/docs/webz/archive-api
+docs: https://docs.webz.io/docs/webz/news-blogs-forums-errors-limits
+format: vendor-specific
+rfc9457: false
+summary: >-
+  Webz.io ships four different error envelopes across six products and none of them is RFC 9457
+  problem+json. An agent integrating more than one Webz product has to write more than one error
+  parser. The Archive API is the only surface with a numeric, stable error-code registry.
+envelopes:
+- id: detail
+  shape: '{ "detail": "<message>" }'
+  apis: [News, Blogs, Forums, Reviews, Cyber, News Search]
+  content_type: application/json
+- id: errorCode
+  shape: '{ "errorCode": <int>, "errors": ["message", ...] }'
+  apis: [Data Breaches]
+  content_type: application/json
+- id: errorText
+  shape: '{ "errorText": "<message>", "errorCode": <int> }'
+  apis: [Archive]
+  content_type: application/json
+http_statuses:
+- status: 400
+  apis: [News, Blogs, Forums, Reviews, Cyber]
+  title: Invalid parameters
+  detail: >-
+    Unbalanced quotes or parentheses in q, more than 10 proximity operators, size outside 1-100,
+    negative from, or an unknown sort / order / field value.
+  remediation: Validate the query before sending; use warning=true to get a warnings array back.
+- status: 400
+  apis: [News Search]
+  title: Query too long
+  detail: The query exceeds 750 characters or 100 words.
+  example: '{ "detail": "Query is too long. Please use at most 750 characters (your query has 800)." }'
+  remediation: Truncate the query. Rejected requests are not charged.
+- status: 400
+  apis: [Data Breaches]
+  title: Bad parameter
+  detail: Missing, unknown, duplicated or malformed parameter, or a time filter older than one year without raw=true.
+- status: 401
+  apis: [News, Blogs, Forums, Reviews, Cyber, Data Breaches, News Search]
+  title: Unauthorized
+  detail: Missing or unknown token, or the account lacks the product permission for this endpoint.
+  example: '{ "detail": "Unknown API token" }'
+  remediation: Check the token; ask support@webz.io or sales@webz.io to add the product permission.
+  gotcha: On the Cyber API a missing permission returns 429 on /cyberSeg instead of 401.
+- status: 402
+  apis: [News Search]
+  title: Insufficient credits
+  detail: The account has no remaining credits.
+  remediation: Top up. This is terminal, not retryable.
+- status: 402
+  apis: [Data Breaches]
+  title: Email not verified
+  detail: The account email address is not verified.
+- status: 403
+  apis: [News Search]
+  title: Account inactive
+  detail: The account is inactive, blocked, or its trial has ended.
+- status: 403
+  apis: [News, Blogs, Forums]
+  title: Filter not licensed
+  detail: Account not activated, trial ended, or a trust.source.type filter the plan does not include.
+- status: 403
+  apis: [Data Breaches]
+  title: Domain not authorized
+  detail: >-
+    No authorized domains, an unauthorized domain, or a domain blocked by the safeguard (over about
+    1,000,000 records in the past year).
+  remediation: Contact support to enable the domain.
+- status: 404
+  apis: [Data Breaches]
+  title: Not found
+  detail: Endpoint or resource not found, or no user for the token.
+- status: 422
+  apis: [News Search]
+  title: Unprocessable request body
+  detail: The request body is invalid, for example k greater than 50.
+- status: 429
+  apis: [News, Blogs, Forums, Reviews, Cyber, Data Breaches, News Search]
+  title: Rate limited OR out of credits
+  detail: >-
+    Both conditions collapse into 429. Reviews and Cyber additionally return 429 when the account is
+    not activated or the trial has ended.
+  examples:
+  - '{ "detail": "rate limit exceeded" }'
+  - 'Too many requests: used X out of Y allowed in a month'
+  remediation: >-
+    On Data Breaches read X-RateLimit-Reason (rate_limit vs insufficient_credits). On every other
+    product the two are indistinguishable — inspect requests_left / requestsLeft from the last
+    successful response before deciding whether to retry.
+- status: 500
+  apis: [Reviews, Cyber, Data Breaches]
+  title: Internal error
+  detail: Includes unbalanced quotes or parentheses in q, which several products surface as 500 rather than 400.
+- status: 503
+  apis: [Data Breaches]
+  title: Service temporarily unavailable
+- status: 5xx
+  apis: [News Search]
+  title: Temporary server error
+  remediation: Retry later.
+archive_error_codes:
+  source: https://docs.webz.io/docs/webz/archive-api
+  envelope: '{ "errorText": "...", "errorCode": <int> }'
+  codes:
+  - code: 1
+    endpoint: setArchiveQuery
+    meaning: Query matches fewer than 10 posts in the last 30 days.
+  - code: 2
+    endpoint: setArchiveQuery
+    meaning: Error running the query.
+  - code: 3
+    endpoint: setArchiveQuery
+    meaning: Empty query.
+  - code: 4
+    endpoint: setArchiveQuery
+    meaning: Start date is earlier than 5 years back.
+  - code: 5
+    endpoint: setArchiveQuery
+    meaning: End date is in the future.
+  - code: 6
+    endpoint: setArchiveQuery
+    meaning: Start date is after end date.
+  - code: 7
+    endpoint: setArchiveQuery
+    meaning: performance_score filter used before May 2015.
+  - code: 8
+    endpoint: setArchiveQuery
+    meaning: Sentiment filter used before June 2016.
+  - code: 9
+    endpoint: setArchiveQuery
+    meaning: Unknown API token.
+  - code: 10
+    endpoint: setArchiveQuery / confirmArchiveQuery
+    meaning: Not enough credits for the estimated post count.
+  - code: 11
+    endpoint: confirmArchiveQuery
+    meaning: A previous order is still pending; wait for it to finish.
+  - code: 15
+    endpoint: setArchiveQuery
+    meaning: Start date is after end date.
+  - code: 21
+    endpoint: confirmArchiveQuery
+    meaning: Unknown confirmation token.
+  - code: 30
+    endpoint: getArchiveOrderStatus
+    meaning: Missing confirmation token.
+  - code: 31
+    endpoint: getArchiveOrderStatus
+    meaning: Unknown confirmation token.
+  - code: 33
+    endpoint: setArchiveQuery
+    meaning: Format other than ndjson requested.
+gaps:
+- No RFC 9457 application/problem+json anywhere.
+- No stable machine error identifier on the six non-Archive products — only prose in a detail string.
+- No documented Retry-After on any 429.

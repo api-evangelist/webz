@@ -1,0 +1,110 @@
+generated: '2026-08-27'
+method: searched
+source: https://webz.io/pricing
+docs: https://docs.webz.io/docs/webz/archive-pricing-credits
+summary: >-
+  Webz.io splits its commercial surface in two. The Open Web APIs are self-service and publicly
+  priced down to the individual call and result, including a genuinely free tier with no credit card.
+  The Dark Web APIs — Cyber and Data Breaches — publish no price at all and are contact-only, which
+  is why the plan list below carries both a fully-specified pay-as-you-go rate card and two tiers with
+  price: null. Archive is priced separately on prepaid credits in the documentation.
+plan_count: 6
+currency: USD
+plans:
+- name: Free
+  family: Open Web APIs
+  price: 0
+  currency: USD
+  billing_period: month
+  included: $5 free monthly usage credits
+  credit_card_required: false
+  features:
+  - Search API and Open Web Data Feeds
+  - Limited historical access
+  - Self-service support
+- name: Scale
+  family: Open Web APIs
+  price: null
+  price_model: pay-as-you-go
+  currency: USD
+  billing_period: usage
+  included: $5 free monthly usage credits
+  commitment: none — no minimum spend
+  rates:
+  - item: Search API
+    per_call: 0.001
+    per_result: 0.0005
+  - item: Open Web Data Feeds
+    per_call: 0.01
+    per_result: 0.005
+  - item: Fact Check API
+    per_call: 0.15
+  features:
+  - Extended historical access
+  - Self-service support
+- name: High Volume
+  family: Open Web APIs
+  price: null
+  price_model: custom
+  billing_period: negotiated
+  features:
+  - Bulk volume discount
+  - Flexible packages
+  - Custom source additions
+  - Premium support
+  - Tailored data feeds
+  - Custom setup for AI, analytics and monitoring
+- name: Dark Web API
+  family: Dark Web APIs
+  price: null
+  price_model: contact-for-pricing
+  features:
+  - Multilingual forum access
+  - Advanced search
+  - Enriched metadata
+  - Threat-actor profiles
+  access: sales@webz.io
+- name: Data Breach API
+  family: Dark Web APIs
+  price: null
+  price_model: contact-for-pricing
+  features:
+  - Real-time breach detection
+  - Unified JSON format
+  - Forensic context
+  - Advanced filtering
+  access: sales@webz.io
+- name: News API Lite
+  family: Free / non-commercial
+  price: 0
+  currency: USD
+  billing_period: month
+  source: https://docs.webz.io/docs/webz/news-api-lite
+  included: 1,000 API calls per month, 10 results per call
+  limits:
+  - Non-commercial use only
+  - Up to 30 days of historical news
+  - Matching snippets only, not full article text
+  - Blogs, reviews and forums are not included
+  - Results ordered by relevance; sorting not supported
+  signup: https://webz.io/products/news-api#lite
+archive_credits:
+  source: https://docs.webz.io/docs/webz/archive-pricing-credits
+  model: prepaid credits
+  unit_cost: 1 credit per post retrieved
+  charged_on: actual posts retrieved, not the estimate
+  expiry: Credits have a reset date; unused credits expire when it passes.
+  card_alternative:
+    per_post: 0.0002
+    currency: USD
+    minimum_per_month_in_range: 10
+    note: >-
+      The higher of the two applies, and the cost is charged regardless of the actual result count,
+      including an empty dataset.
+  free_sample: up to 100 posts from the last 30 days, no credits consumed
+  concurrency: One order is processed at a time; a pending order holds its reserved credits.
+notes:
+- The published rate card is unusually granular for this market — per-call AND per-result pricing on
+  each Open Web product — which makes cost genuinely predictable for an agent.
+- Cyber and Data Breaches publish no price, no quota and no self-service signup, so an agent cannot
+  plan spend on the dark-web half of the catalog from public information.

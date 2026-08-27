@@ -1,0 +1,194 @@
+generated: '2026-08-27'
+method: searched
+source: >-
+  https://docs.webz.io/docs/webz/news-blogs-forums-endpoints,
+  https://docs.webz.io/docs/webz/news-blogs-forums-parameters,
+  https://docs.webz.io/docs/webz/news-blogs-forums-pagination,
+  https://docs.webz.io/docs/webz/news-blogs-forums-response-format,
+  https://docs.webz.io/docs/webz/news-blogs-forums-errors-limits,
+  https://docs.webz.io/docs/webz/data-breach-pagination,
+  https://docs.webz.io/docs/webz/cyber-api-pagination,
+  https://docs.webz.io/docs/webz/news-search-api-response-format,
+  https://docs.webz.io/docs/webz/archive-api,
+  https://docs.webz.io/docs/webz/fh-api-curated-feed
+docs: https://docs.webz.io/docs/webz/news-blogs-forums-api-reference
+summary: >-
+  Webz.io is a read-only search and retrieval API family. Every product is a GET (News Search is the
+  one POST, and Reviews accepts POST as an alias), the response is a JSON envelope wrapping a result
+  array plus an opaque next cursor, and the only state a caller can create is an Archive order. That
+  shape determines most of the semantics below: there is nothing to make idempotent, nothing to
+  reverse, and no dry run — except on Archive, which is the one write surface and does model a
+  rehearse-then-commit flow.
+transport:
+  protocol: HTTPS
+  methods:
+    default: GET
+    exceptions:
+    - POST https://api.webz.io/api/news/context (News Search — parameters in a JSON body)
+    - POST https://api.webz.io/reviewFilter (accepted as an alias of the GET)
+  content_type: application/json
+  base_urls:
+  - https://api.webz.io — News, Blogs, Forums, Reviews, Cyber, Data Breaches, Firehose
+  - https://app.webz.io — Archive order lifecycle
+  - https://news-search-mcp.webz.io — MCP
+authentication:
+  style: single opaque account token
+  query_parameter: token
+  header: 'Authorization: Bearer <token>'
+  header_supported_on: [News, Blogs, Forums, News Search, MCP]
+  see: authentication/webz-authentication.yml
+naming:
+  case: >-
+    INCONSISTENT ACROSS PRODUCTS, and this is a real integration cost. News/Blogs/Forums and News
+    Search use snake_case envelope fields (total_results, more_results_available, requests_left);
+    Reviews, Cyber, Data Breaches and Archive use camelCase (totalResults, moreResultsAvailable,
+    requestsLeft, cyberDocs, nextPage). The deprecated Web Content API used camelCase, and the
+    migration note on the News/Blogs/Forums docs is explicitly a case rename.
+  result_array_name_varies: [posts, cyberDocs, records, results]
+pagination:
+  style: opaque forward cursor returned by the server
+  primary_field: next
+  firehose_field: nextPage
+  usage: >-
+    Append the returned relative URL to the base host and call it. Do not construct cursor parameters
+    yourself — ts plus ni/ns (and from for relevancy-style sorts) are documented as opaque.
+  termination: more_results_available reaches 0 (moreResultsAvailable on the camelCase products); next is null at a Data Breaches boundary.
+  page_size:
+    news_blogs_forums: size parameter, 1-100, default 100
+    data_breaches: up to 100 per page (not caller-controlled)
+    firehose: up to 100 per response
+    segmentation: 10 buckets per page, 100 buckets total per query
+    news_search: k parameter, 1-50, default 10
+    news_api_lite: 10 results per call, fixed
+  offset_alternative: from — used with relevancy and other non-crawled sorts
+  cost: Every page is a separate billed request.
+  gotchas:
+  - The next URL carries highlight, webz_reporter and allowNewsHistory forward but NOT
+    includeSyndicated — re-append it on every page if you need syndicated copies.
+  - If you authenticated with the token query parameter the next URL already embeds your token, which
+    means a paginating agent is carrying a live credential in a URL it may log.
+  - "With the default crawled sort, continuing to poll next acts as a change feed: each call returns
+    only what has been crawled since the last one."
+filtering_and_query:
+  language: Boolean query string in q — operators, phrases, proximity (max 10 operators), wildcards
+  field_filters: 'Inline field:value syntax, e.g. title:(Trump OR Biden) sentiment:negative'
+  validation: warning=true returns a warnings array of message/type/level instead of failing silently
+  sorting:
+    default: crawled
+    note: crawled is the only sort that supports full pagination and news history.
+    values: [crawled, relevancy, published, thread.published, updated, domain_rank, performance_score, replies_count, participants_count, ord_in_thread, rating, social.*]
+  aggregation: Segmentation endpoints (/seg_api/*, /cyberSeg, /reviewSeg) return bucket counts instead of documents.
+metadata_and_expansion:
+  sparse_fields: not supported
+  expansion: not supported
+  enrichment_flags: [highlight, warning, allowNewsHistory, includeSyndicated, webz_reporter]
+  full_text_join: >-
+    News Search returns an excerpt plus article.article_id; fetch the full document by querying the
+    News API with q=uuid:<article_id> and ts set 30 days back.
+request_id_tracing:
+  correlation_header: not published
+  note: No request-id or trace header is documented on any product.
+error_envelope:
+  shapes:
+  - '{ "detail": "<message>" }'
+  - '{ "errorCode": <int>, "errors": [...] }'
+  - '{ "errorText": "<message>", "errorCode": <int> }'
+  rfc9457: false
+  see: errors/webz-error-codes.yml
+rate_limit_signaling:
+  headers: [X-WebHose-Requests-Left, 'X-RateLimit-Reason (Data Breaches only)']
+  body_fields: [requests_left, requestsLeft, credits_used]
+  standard_headers: none — no RateLimit-*, no Retry-After
+  see: rate-limits/webz-rate-limits.yml
+versioning:
+  scheme: none
+  see: lifecycle/webz-lifecycle.yml
+idempotency:
+  supported: na
+  header: null
+  rationale: >-
+    Six of the seven products are read-only GET searches, which are idempotent by construction and
+    need no idempotency key. The one write surface, the Archive order flow, deliberately splits into
+    setArchiveQuery (reserve, charge nothing) and confirmArchiveQuery (charge), and the confirm call
+    is keyed on a server-issued confirmationToken — replaying the same confirmationToken cannot
+    create a second order, and a second concurrent order is rejected outright with errorCode 11 while
+    one is pending. That is idempotency by token rather than by Idempotency-Key header, and Webz.io
+    does not document an Idempotency-Key header anywhere.
+  note: >-
+    No Idempotency pointer is emitted for this provider. The confirmationToken behaviour is a real
+    safety property but it is not a general idempotency facility, and claiming one would over-credit.
+dry_run_mode:
+  supported: partial
+  surfaces:
+  - name: Archive cost estimate
+    operation: GET https://app.webz.io/setArchiveQuery
+    behaviour: >-
+      Runs the query against the last 30 days, returns estimatedTotalPostCount and
+      currentArchiveQuota, checks the credit balance and reserves a pending order. Nothing runs and
+      nothing is charged until confirmArchiveQuery is called.
+    docs: https://docs.webz.io/docs/webz/archive-api
+  - name: Archive free sample
+    behaviour: Up to 100 posts from the last 30 days, once per account, consuming no credits.
+    docs: https://docs.webz.io/docs/webz/archive-pricing-credits
+  - name: Query validation
+    parameter: warning=true
+    behaviour: Returns a warnings array describing query problems without changing the result semantics.
+  - name: Segmentation
+    behaviour: >-
+      Sizing a topic with a 1-credit bucket count before spending credits pulling documents is the
+      documented cheap-rehearsal path on the search products.
+reversibility:
+  grade: na
+  rationale: >-
+    Webz.io has no destructive write surface. The search, segmentation, firehose and MCP products
+    only read; they create nothing a caller could need to undo. The single mutating flow is placing
+    an Archive order, and it is a purchase, not a resource — see below.
+  write_surfaces:
+  - operation: GET https://app.webz.io/setArchiveQuery
+    creates: A pending Archive order plus a credit reservation.
+    reversal: null
+    reversal_documented: false
+    window: null
+    note: >-
+      No cancel or delete operation is documented. The docs state only that a pending order holds its
+      reserved credits and that a second order is rejected until the first completes, which implies
+      the reservation clears when the order finishes — but no release, cancel or timeout is stated,
+      so no window is recorded here.
+  - operation: GET https://app.webz.io/confirmArchiveQuery
+    creates: Charges credits and queues the order for retrieval.
+    reversal: null
+    reversal_documented: false
+    window: null
+    note: >-
+      No refund, void or cancel operation exists in the API or the documentation. Under the card
+      payment alternative the docs are explicit that "the cost is charged regardless of the actual
+      result count - including an empty dataset", which is an affirmative statement that the charge
+      is NOT reversible. An agent must treat confirmArchiveQuery as a one-way, billed commitment and
+      rely on the setArchiveQuery estimate as its only pre-flight control.
+  - operation: Credit expiry
+    note: >-
+      Unused credits expire at the account reset date. That is an irreversible loss of prepaid value
+      with a date the API does not expose — it is emailed, not returned in any response field.
+  data_deletion:
+    subject_rights: >-
+      Webz.io publishes GDPR and CCPA compliance and a dark-web policy, but no API operation for
+      record deletion or opt-out is documented. Reversal of data exposure is a legal process, not an
+      API call.
+    docs: https://webz.io/dark-web-policy/
+streaming:
+  model: cursor polling, not push
+  surfaces:
+  - Firehose FH API — poll https://api.webz.io/firehose and follow nextPage; data available about
+    five minutes after crawling; posts ordered oldest to newest.
+  - Any search endpoint with the default crawled sort — repeatedly following next yields only newly
+    crawled matches.
+  - Legacy Firehose — XML in ZIP over FTP (superseded).
+  webhooks: none published
+  asyncapi: none published
+cross_references:
+  authentication: authentication/webz-authentication.yml
+  scopes: scopes/webz-scopes.yml
+  errors: errors/webz-error-codes.yml
+  rate_limits: rate-limits/webz-rate-limits.yml
+  lifecycle: lifecycle/webz-lifecycle.yml
+  data_model: data-model/webz-data-model.yml

@@ -1,0 +1,110 @@
+generated: '2026-08-27'
+method: searched
+source: >-
+  https://docs.webz.io/docs/webz/news-blogs-forums-endpoints,
+  https://docs.webz.io/docs/webz/cyber-api-endpoints,
+  https://docs.webz.io/docs/webz/data-breach-endpoints,
+  https://docs.webz.io/docs/webz/reviews-api-endpoints,
+  https://docs.webz.io/docs/webz/news-search-api-endpoints,
+  https://docs.webz.io/docs/webz/news-search-api-mcp,
+  https://news-search-mcp.webz.io/.well-known/oauth-authorization-server
+docs: https://docs.webz.io/docs/webz/news-blogs-forums-endpoints
+summary: >-
+  One account token authenticates every Webz.io product. There is no OAuth on the REST APIs and no
+  per-product credential — access is granted by attaching product permissions to the single token,
+  which is why calling an endpoint you are not subscribed to returns 401 with a permission error
+  rather than 403. The only OAuth surface Webz.io operates is in front of the News Search MCP server,
+  and the provider documents that flow as a wrapper that still ends in pasting the same API token.
+schemes:
+- id: api_token_query
+  type: apiKey
+  in: query
+  name: token
+  description: >-
+    The API token as a query parameter. This is the only documented method for the Cyber API, the
+    Data Breaches API, the Reviews API, the Archive API and the Firehose FH API.
+  applies_to:
+  - https://api.webz.io/cyberFilter
+  - https://api.webz.io/cyberSeg
+  - https://api.webz.io/breaches
+  - https://api.webz.io/breachCatalog
+  - https://api.webz.io/reviewFilter
+  - https://api.webz.io/reviewSeg
+  - https://api.webz.io/firehose
+  - https://app.webz.io/setArchiveQuery
+  - https://app.webz.io/confirmArchiveQuery
+  - https://app.webz.io/getArchiveOrderStatus
+  - https://api.webz.io/api/news
+  - https://api.webz.io/api/blogs
+  - https://api.webz.io/api/forums
+- id: api_token_bearer
+  type: http
+  scheme: bearer
+  description: >-
+    Authorization Bearer header carrying the same API token. Documented as the RECOMMENDED method
+    for the News Search API and as an alternative for News/Blogs/Forums. Not documented for Cyber,
+    Data Breaches, Reviews, Archive or Firehose.
+  applies_to:
+  - https://api.webz.io/api/news/context
+  - https://api.webz.io/api/news
+  - https://api.webz.io/api/blogs
+  - https://api.webz.io/api/forums
+  - https://news-search-mcp.webz.io/mcp
+- id: mcp_oauth
+  type: oauth2
+  flow: authorizationCode
+  description: >-
+    RFC 8414 authorization-server metadata in front of the News Search MCP endpoint, used by
+    Claude.ai and ChatGPT connectors. PKCE S256 required; dynamic client registration (RFC 7591)
+    is advertised. The provider's own instructions say to leave Client ID and Secret empty and paste
+    the Webz token on the authorize page, so the identity behind the OAuth grant is still the API token.
+  authorization_endpoint: https://news-search-mcp.webz.io/authorize
+  token_endpoint: https://news-search-mcp.webz.io/token
+  registration_endpoint: https://news-search-mcp.webz.io/register
+  scopes:
+  - mcp
+  applies_to:
+  - https://news-search-mcp.webz.io/mcp
+token_acquisition:
+  where: https://app.webz.io/playground/dashboard
+  self_service: true
+  note: >-
+    A verified account with a positive credit balance is required. News API Lite issues a free
+    non-commercial token through https://webz.io/products/news-api#lite.
+permissions_model:
+  style: per-product entitlement attached to the token
+  documented_permissions:
+  - api_news
+  known_products:
+  - News / Blogs / Forums
+  - Reviews
+  - Cyber (dark web)
+  - Data Breaches
+  - Archive
+  - Firehose (FH API)
+  - News Search
+  escalation: >-
+    Adding a product is a sales/support action — support@webz.io for News/Blogs/Forums and Reviews,
+    sales@webz.io for Cyber, Data Breaches and Archive. There is no self-service upgrade path
+    documented for the dark-web products.
+  data_breach_extras:
+  - Domain authorization — a token may only search domains authorized for it. A newly queried domain
+    is authorized automatically and takes ~20 seconds to index on first request; a domain with over
+    ~1,000,000 records in the past year is blocked with 403 until support enables it.
+  - A view-password permission controls whether the password field is returned in full or masked
+    (for example pa****23).
+failure_modes:
+- status: 401
+  when: Missing or unknown token, or the account lacks the product permission for that endpoint.
+  body: '{ "detail": "Unknown API token" }'
+- status: 401
+  when: Cyber API without the Cyber permission. Note /cyberSeg returns 429 rather than 401 in this case.
+- status: 402
+  when: News Search — insufficient credits. Data Breaches — the account email is not verified.
+- status: 403
+  when: Account inactive, blocked, or trial ended; also an unauthorized or safeguard-blocked breach domain.
+warnings:
+- The token travels in the query string on most products, so it lands in access logs, browser
+  history and any shared URL. The provider's own MCP guidance warns "never commit your token to git
+  or put it in a URL", which the query-parameter auth on the other six products directly contradicts.
+- Opening https://news-search-mcp.webz.io/mcp in a browser returns 401 by design.

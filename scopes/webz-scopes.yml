@@ -1,0 +1,46 @@
+generated: '2026-08-27'
+method: probed
+source: https://news-search-mcp.webz.io/.well-known/oauth-authorization-server
+docs: https://docs.webz.io/docs/webz/news-search-api-mcp
+note: >-
+  Webz.io's REST APIs use a single opaque API token with no scopes; entitlement is a per-product
+  permission on the account, not an OAuth scope. The only OAuth surface is the authorization server
+  in front of the News Search MCP endpoint, and it advertises exactly one scope. Recorded from the
+  live RFC 8414 metadata document, not inferred.
+authorization_server: https://news-search-mcp.webz.io/
+resource: https://news-search-mcp.webz.io/mcp
+scope_count: 1
+scopes:
+- name: mcp
+  description: >-
+    The only scope the News Search MCP authorization server advertises in scopes_supported. It grants
+    access to the single protected resource https://news-search-mcp.webz.io/mcp; the server publishes
+    no finer-grained or per-tool scopes.
+  source: scopes_supported in the RFC 8414 metadata
+flows:
+  authorization_code:
+    supported: true
+    pkce: S256
+  refresh_token:
+    supported: true
+  client_credentials:
+    supported: false
+token_endpoint_auth_methods_supported:
+- client_secret_post
+- client_secret_basic
+dynamic_client_registration: https://news-search-mcp.webz.io/register
+non_oauth_entitlements:
+  note: >-
+    These are account permissions, not scopes. They are listed here because they are what actually
+    gates access on the REST surface, and an agent planning a call needs to know them.
+  permissions:
+  - api_news
+  products_requiring_separate_entitlement:
+  - News / Blogs / Forums
+  - Reviews
+  - Cyber
+  - Data Breaches
+  - Archive
+  - Firehose
+  - view-password (Data Breaches — returns unmasked passwords)
+  - per-domain authorization (Data Breaches)

@@ -1,0 +1,180 @@
+generated: '2026-08-27'
+method: searched
+source: >-
+  https://docs.webz.io/docs/webz/news-api-post-fields,
+  https://docs.webz.io/docs/webz/news-blogs-forums-response-format,
+  https://docs.webz.io/docs/webz/cyber-api-response-format,
+  https://docs.webz.io/docs/webz/cyber-api-data-fields,
+  https://docs.webz.io/docs/webz/reviews-api-response-format,
+  https://docs.webz.io/docs/webz/reviews-api-data-fields,
+  https://docs.webz.io/docs/webz/data-breach-response-format,
+  https://docs.webz.io/docs/webz/data-breach-data-fields,
+  https://docs.webz.io/docs/webz/news-search-api-response-format,
+  https://docs.webz.io/docs/webz/archive-api
+note: >-
+  Derived from the published field references, not from an OpenAPI — Webz.io publishes no machine
+  readable contract, so every entity and relationship below is transcribed from the provider's own
+  object-reference tables. There is no shared identifier scheme across products: uuid means a
+  different thing in each family, and the one documented cross-product join is News Search's
+  article_id, which is the News API post uuid.
+identifiers:
+- field: uuid
+  entities: [Post, Thread, CyberDoc, BreachRecord, Breach]
+  form: opaque hex string; the Data Breaches uuid and breach_uuid are documented as 40-char hex
+  note: Reused name, different namespace per product. There is no global Webz.io object id.
+- field: article_id
+  entities: [NewsSearchArticle]
+  form: equal to the News API post uuid
+  join: 'GET https://api.webz.io/api/news?q=uuid:<article_id>&ts=<30 days ago in ms>'
+- field: confirmationToken
+  entities: [ArchiveOrder]
+  form: UUID issued by setArchiveQuery, presented to confirmArchiveQuery and getArchiveOrderStatus
+- field: syndicated_id
+  entities: [Post]
+  form: shared by every observed copy of the same story
+- field: infection_uuid
+  entities: [BreachRecord]
+entities:
+- name: Post
+  products: [News, Blogs, Forums, Web Content (deprecated), Firehose, Archive]
+  array: posts
+  description: The core open-web document — a news article, blog post or forum message.
+  key_fields: [uuid, url, title, text, summary, author, published, crawled, updated, language, sentiment, categories, topics, ord_in_thread, external_links, external_images, internal_images, rating, breaking, webz_reporter, ai_allow, has_canonical, highlightText, highlightTitle, highlightThreadTitle]
+- name: Thread
+  products: [News, Blogs, Forums]
+  description: The container a Post belongs to — the source site, section and the thread-level rollup.
+  key_fields: [uuid, url, site, site_full, site_section, section_title, site_title, site_type, site_categories, title, title_full, published, country, main_image, performance_score, domain_rank, domain_rank_updated, licensing_agency, social]
+- name: SocialCounts
+  products: [News]
+  description: Engagement counts attached to a Thread.
+  key_fields: [facebook.likes, facebook.shares, facebook.comments, vk.shares, updated]
+- name: Entity
+  products: [News]
+  description: Named entities extracted from a post with per-entity sentiment.
+  variants:
+  - persons — { name, sentiment }
+  - locations — { name, sentiment }
+  - organizations — { name, sentiment, tickers[] }
+- name: TradingSymbol
+  products: [News]
+  key_fields: [ticker, exchange]
+- name: TrustProfile
+  products: [News]
+  description: Source-level trust and provenance metadata.
+  key_fields: [categories, top_news, bias, source.type, source.city, source.state, source.country, source.domain_type, source.agency, source.organization_name]
+- name: SyndicationInfo
+  products: [News]
+  key_fields: [syndicated, syndicated_id, first_syndicated]
+- name: CyberDoc
+  products: [Cyber]
+  array: cyberDocs
+  description: A deep or dark web post, with network provenance and enrichment.
+  key_fields: [uuid, url, title, text, author, language, published, crawled, site, thread, extended, enriched]
+  notes: extended.network carries the network (for example tor).
+- name: Review
+  products: [Reviews]
+  description: A customer review with rating and source metadata.
+- name: BreachRecord
+  products: [Data Breaches]
+  array: records
+  description: One compromised credential or exposed record, from an infostealer log or a breach dump.
+  key_fields: [uuid, crawled_date, type, sub_type, login_url, login_domain, email, account_name, password, password_type, infection_uuid, exfiltration_date, log_file_name, hwid, ip_address, location, computer_username, os, antivirus_software, malware_family, malware_path]
+  sensitivity: >-
+    PII by construction. The password field is masked (for example pa****23) unless the account holds
+    the view-password permission, and searchable domains are gated per token.
+- name: Breach
+  products: [Data Breaches]
+  description: The catalogued breach event a BreachRecord came from; looked up through /breachCatalog.
+  key_fields: [uuid, breach_date, breach_name, breach_domain, compromised_assets, file_name, file_link, post_url, site_domain, is_premium, published_date]
+- name: NewsSearchResult
+  products: [News Search]
+  array: results
+  description: A semantic-search hit — an article stub, the matching chunk, and metadata.
+  key_fields: [article.article_id, article.url, article.title, article.published_at, article.summary, article.main_image, chunk.chunk_id, chunk.chunk_index, chunk.text, metadata.language, metadata.country, metadata.category, metadata.sentiment, metadata.domain, metadata.site_type]
+- name: SegmentationBucket
+  products: [News, Blogs, Forums, Reviews, Cyber]
+  array: segmentation
+  description: An aggregate count for one value of an aggregation field.
+  key_fields: [<field>, num_docs]
+- name: ArchiveOrder
+  products: [Archive]
+  description: The only mutable object in the catalog — a prepaid historical dataset order.
+  key_fields: [confirmationToken, estimatedTotalPostCount, currentArchiveQuota, statusCode, statusText, downloadLink]
+  lifecycle: set (reserve) -> confirm (charge) -> poll status 0 queued / 1 retrieving / 2 complete -> download ZIP, link valid 7 days
+- name: SearchEnvelope
+  products: all search products
+  description: The wrapper every search response shares.
+  key_fields_snake: [posts, next, total_results, more_results_available, requests_left, warnings]
+  key_fields_camel: [cyberDocs, records, next, totalResults, moreResultsAvailable, requestsLeft, totalResultsVerified]
+relationships:
+- from: Thread
+  to: Post
+  type: has_many
+  via: thread.uuid
+- from: Post
+  to: Thread
+  type: belongs_to
+  via: thread
+- from: Thread
+  to: SocialCounts
+  type: has_one
+  via: thread.social
+- from: Post
+  to: Entity
+  type: has_many
+  via: entities.persons / entities.locations / entities.organizations
+- from: Entity
+  to: TradingSymbol
+  type: has_many
+  via: organizations[].tickers
+- from: Thread
+  to: TrustProfile
+  type: has_one
+  via: trust
+- from: Post
+  to: Post
+  type: has_many
+  via: syndicated_id (all copies of one story share it; first_syndicated marks the original)
+- from: NewsSearchResult
+  to: Post
+  type: belongs_to
+  via: article.article_id equals the News API post uuid
+- from: BreachRecord
+  to: Breach
+  type: belongs_to
+  via: breach_uuid
+- from: Breach
+  to: BreachRecord
+  type: has_many
+  via: breach_uuid used as a search filter
+- from: BreachRecord
+  to: BreachRecord
+  type: has_many
+  via: infection_uuid (records from the same infostealer infection)
+- from: CyberDoc
+  to: CyberDoc
+  type: has_many
+  via: thread (posts within one dark-web thread)
+- from: SearchEnvelope
+  to: Post
+  type: has_many
+  via: posts
+- from: SearchEnvelope
+  to: CyberDoc
+  type: has_many
+  via: cyberDocs
+- from: SearchEnvelope
+  to: BreachRecord
+  type: has_many
+  via: records
+- from: ArchiveOrder
+  to: Post
+  type: has_many
+  via: the NDJSON dataset delivered in the ZIP
+observations:
+- One post shape is reused across News, Blogs, Forums, Firehose and Archive; the enrichment fields
+  (sentiment, entities, topics, trust, social, performance_score) are documented as meaningful only
+  on news, so the same schema carries very different fill rates per product.
+- Cyber, Data Breaches and Reviews each define their own envelope and their own document, so the
+  three dark-web/reviews products do not share a model with the open-web three.
+- Archive is the only product that produces a downloadable file rather than a JSON response.

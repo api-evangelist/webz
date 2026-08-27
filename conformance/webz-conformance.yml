@@ -1,0 +1,196 @@
+generated: '2026-08-27'
+method: searched
+source: >-
+  https://news-search-mcp.webz.io/.well-known/oauth-authorization-server,
+  https://news-search-mcp.webz.io/.well-known/oauth-protected-resource/mcp,
+  https://news-search-mcp.webz.io/mcp,
+  https://webz.io/trust,
+  https://docs.webz.io/docs/webz/news-search-api-mcp,
+  https://docs.webz.io/docs/webz/news-blogs-forums-errors-limits
+summary: >-
+  Webz.io's standards posture is bimodal. Everything the company built around its MCP server is
+  standards-conformant and was verified live — RFC 8414, RFC 9728, PKCE, dynamic client registration,
+  MCP itself, llms.txt. Everything on the original REST surface predates that effort and conforms to
+  nothing: no OpenAPI, no RFC 9457 errors, no RFC 9116 security.txt, no RFC 8594 sunset headers, no
+  standard rate-limit headers. The corporate compliance layer (SOC 2, ISO 27001, GDPR, CCPA) is
+  separately published and real.
+conformance:
+- id: oauth2
+  conforms: true
+  evidence: >-
+    Authorization-code flow with refresh tokens in front of the MCP endpoint. Probed live:
+    https://news-search-mcp.webz.io/.well-known/oauth-authorization-server returned 200 with
+    grant_types_supported [authorization_code, refresh_token].
+- id: rfc8414
+  name: OAuth 2.0 Authorization Server Metadata
+  conforms: true
+  evidence: >-
+    https://news-search-mcp.webz.io/.well-known/oauth-authorization-server returned HTTP 200
+    application/json carrying issuer, authorization_endpoint, token_endpoint, registration_endpoint,
+    scopes_supported, response_types_supported, grant_types_supported,
+    token_endpoint_auth_methods_supported and code_challenge_methods_supported.
+- id: rfc9728
+  name: OAuth 2.0 Protected Resource Metadata
+  conforms: true
+  evidence: >-
+    https://news-search-mcp.webz.io/.well-known/oauth-protected-resource/mcp returned HTTP 200 with
+    resource, authorization_servers and bearer_methods_supported. The 401 from the MCP endpoint also
+    returns a correctly-formed WWW-Authenticate header naming that resource_metadata URL, which is
+    the RFC 9728 discovery handshake working end to end.
+- id: rfc7636
+  name: PKCE
+  conforms: true
+  evidence: 'code_challenge_methods_supported: ["S256"] in the authorization-server metadata.'
+- id: rfc7591
+  name: OAuth 2.0 Dynamic Client Registration
+  conforms: true
+  evidence: 'registration_endpoint: https://news-search-mcp.webz.io/register advertised in the metadata.'
+- id: rfc6750
+  name: OAuth 2.0 Bearer Token Usage
+  conforms: true
+  evidence: >-
+    bearer_methods_supported ["header"], and the anonymous POST to /mcp returned
+    'WWW-Authenticate: Bearer error="invalid_token", error_description="Authentication required"'.
+- id: oidc
+  conforms: false
+  evidence: /.well-known/openid-configuration returned 404 on every Webz.io host including the MCP host.
+- id: mcp
+  name: Model Context Protocol
+  conforms: true
+  evidence: >-
+    First-party remote MCP server at https://news-search-mcp.webz.io/mcp over streamable HTTP,
+    documented for Cursor, Claude Desktop, Claude Code, Claude.ai and ChatGPT. tools/list is
+    auth-gated (401), so the tool schema was taken from the provider's published tool reference.
+- id: agent-skills
+  name: Agent Skills (SKILL.md)
+  conforms: true
+  evidence: >-
+    Webz.io publishes a complete SKILL.md with name/description frontmatter and documents the
+    ~/.claude/skills and ~/.cursor/skills install paths at
+    https://docs.webz.io/docs/webz/news-search-api-skill.
+- id: llmstxt
+  name: llms.txt
+  conforms: true
+  evidence: >-
+    https://docs.webz.io/llms.txt returned HTTP 200 text/plain, 20,427 bytes, correctly formed —
+    H1 title, blockquote summary, sectioned link list, and a Markdown twin URL for every page.
+- id: openapi
+  conforms: false
+  evidence: >-
+    No OpenAPI or Swagger document is published. Probed and 404: api.webz.io/openapi.json,
+    /openapi.yaml, /swagger.json, /api-docs, /docs; webz.io/openapi.json; docs.webz.io/openapi.json,
+    /swagger.json; docs.webz.io/reference. webz.io/apis.json also 404s.
+- id: graphql
+  conforms: false
+  evidence: No GraphQL surface is documented or discoverable on any Webz.io host.
+- id: asyncapi
+  conforms: false
+  evidence: >-
+    No event or webhook surface exists. Firehose is a cursor-polled REST feed, and the legacy
+    Firehose is FTP ZIP delivery — neither is an event-driven contract.
+- id: rfc9457
+  name: Problem Details for HTTP APIs
+  conforms: false
+  evidence: >-
+    Three distinct vendor error envelopes across six products ({detail}, {errorCode, errors},
+    {errorText, errorCode}); none uses application/problem+json.
+- id: rfc9116
+  name: security.txt
+  conforms: false
+  evidence: /.well-known/security.txt returned 404 on webz.io, api.webz.io, docs.webz.io, app.webz.io and news-search-mcp.webz.io.
+- id: rfc8594
+  name: Sunset header
+  conforms: false
+  evidence: >-
+    Two products are deprecated (Web Content API, Legacy Firehose) and both are announced only as
+    inline documentation callouts. No Sunset or Deprecation response header is documented.
+- id: ratelimit-headers
+  name: IETF RateLimit header fields
+  conforms: false
+  evidence: >-
+    Webz.io emits X-WebHose-Requests-Left and X-RateLimit-Reason, not RateLimit-Limit /
+    RateLimit-Remaining / RateLimit-Reset, and documents no Retry-After.
+- id: pagination
+  conforms: true
+  evidence: >-
+    Consistent server-issued opaque cursor across every product — a next (nextPage on Firehose)
+    relative URL plus a more_results_available/moreResultsAvailable termination counter, documented
+    per product and explicitly marked opaque.
+- id: idempotency
+  conforms: na
+  evidence: >-
+    Read-only GET surface. The single write flow (Archive) is keyed on a server-issued
+    confirmationToken rather than a client Idempotency-Key. See conventions/webz-conventions.yml.
+- id: soc2
+  conforms: true
+  evidence: >-
+    https://webz.io/trust states Webz.io "successfully completed the SOC 2 audit, demonstrating
+    commitment to the highest standards of security, confidentiality, and data integrity".
+- id: iso27001
+  conforms: true
+  evidence: https://webz.io/trust links the ISO 27001 certificate and the IQNET certificate as PDFs.
+- id: gdpr
+  conforms: true
+  evidence: https://webz.io/trust names GDPR compliance; supporting documents are the privacy policy and dark-web policy.
+- id: ccpa
+  conforms: true
+  evidence: https://webz.io/trust names CCPA alongside GDPR.
+domain_standards:
+  market: web data / news data / threat intelligence / OSINT
+  note: >-
+    REWARD-ONLY check, recorded honestly. The news and threat-intelligence data markets do have
+    candidate interchange standards — IPTC NewsML-G2 / rNews for news metadata, STIX/TAXII for threat
+    intelligence exchange, MISP for breach and indicator sharing. Webz.io implements none of them as
+    a transport or document format. The one genuine domain-standard signature in the contract is the
+    IPTC subject taxonomy used for topic classification, and it is a partial, provider-flavoured use.
+  signatures:
+  - id: iptc-subject-taxonomy
+    standard: IPTC Media Topics / IPTC subject codes
+    conforms: partial
+    where: >-
+      The topics field on every news post is documented as "Detected IPTC level 2 and 3 topics,
+      formatted as Category->topic", and the News Search category filter enumerates the 17
+      top-level IPTC-style news categories (Arts, Culture and Entertainment; Crime, Law and Justice;
+      Disaster and Accident; Economy, Business and Finance; Education; Environment; Health; Human
+      Interest; Labor; Lifestyle and Leisure; Politics; Religion and Belief; Science and Technology;
+      Social Issue; Sport; War, Conflict and Unrest; Weather).
+    evidence:
+    - https://docs.webz.io/docs/webz/news-api-post-fields
+    - https://docs.webz.io/docs/webz/topics-reference
+    - https://docs.webz.io/docs/webz/news-search-api-skill
+    deviation: >-
+      Values are emitted as a provider-specific "Category->topic" string rather than IPTC medtop
+      concept URIs or QCodes, so a consumer that already speaks IPTC still needs a mapping layer.
+  - id: stix-taxii
+    standard: STIX 2.1 / TAXII 2.1
+    conforms: false
+    note: >-
+      The Cyber and Data Breaches APIs are threat-intelligence products delivered as bespoke JSON.
+      No STIX bundle output, no TAXII collection endpoint, and no mapping table is published — a
+      SOC that already ingests STIX needs a bespoke connector for Webz.io.
+  - id: misp
+    standard: MISP core format
+    conforms: false
+  - id: newsml-g2
+    standard: IPTC NewsML-G2
+    conforms: false
+  - id: iso3166
+    standard: ISO 3166-1 alpha-2
+    conforms: true
+    where: >-
+      The News Search country filter is documented as ISO-2 uppercase codes (US, GB, DE, IL) and
+      thread.country carries a source country code.
+    evidence: https://docs.webz.io/docs/webz/news-search-api-filters
+  - id: iso8601
+    standard: ISO 8601
+    conforms: true
+    where: published, crawled and updated are documented as ISO 8601 timestamps on every post.
+    evidence: https://docs.webz.io/docs/webz/news-api-post-fields
+    deviation: >-
+      Request-side time parameters (ts, crawled_from, breach_from) are Unix epoch milliseconds, not
+      ISO 8601, so the request and response speak different time formats.
+  - id: ndjson
+    standard: Newline-delimited JSON
+    conforms: true
+    where: Archive datasets are delivered as NDJSON inside a ZIP; ndjson is the only accepted format value.
+    evidence: https://docs.webz.io/docs/webz/archive-output-format

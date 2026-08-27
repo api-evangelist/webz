@@ -1,0 +1,91 @@
+generated: '2026-08-27'
+method: searched
+source: >-
+  https://docs.webz.io/docs/webz/web-content,
+  https://docs.webz.io/docs/webz/news-blogs-forums-response-format,
+  https://docs.webz.io/docs/webz/fh-api-curated-feed,
+  https://docs.webz.io/docs/webz/firehose,
+  https://status.webz.io,
+  https://webz.io/trust
+summary: >-
+  Webz.io runs an unversioned API — there is no version in the path, no version header and no dated
+  version scheme anywhere in the documentation. Change is communicated as documentation edits, and
+  the two live deprecations are marked inline on the docs pages rather than in a policy. There is no
+  changelog: https://docs.webz.io/docs/webz/changelog, https://docs.webz.io/changelog and
+  https://webz.io/changelog all return a 404 shell.
+versioning:
+  scheme: none
+  in_path: false
+  in_header: false
+  note: >-
+    Endpoints are bare paths (/api/news, /cyberFilter, /breaches). The News/Blogs/Forums family is
+    itself the successor to the deprecated Web Content API and reuses the same post document with
+    renamed envelope fields, which is a breaking rename delivered as a new endpoint family rather
+    than a version bump.
+deprecations:
+- name: Web Content API
+  status: deprecated
+  endpoint: https://api.webz.io/filterWebContent
+  replacement: News, Blogs & Forums APIs (/api/news, /api/blogs, /api/forums)
+  docs: https://docs.webz.io/docs/webz/web-content
+  announced_by: An inline warning callout at the top of the product's own documentation page.
+  sunset_date: null
+  sunset_header: false
+  deprecation_header: false
+  migration_notes:
+  - Envelope meta fields moved from camelCase to snake_case — totalResults becomes total_results,
+    moreResultsAvailable becomes more_results_available, requestsLeft becomes requests_left.
+  - The posts structure itself is unchanged.
+  - New features land only on the replacement endpoints.
+- name: Legacy Firehose (FTP delivery)
+  status: superseded
+  replacement: Firehose FH API (https://api.webz.io/firehose)
+  docs: https://docs.webz.io/docs/webz/firehose
+  announced_by: 'A tip callout: "Existing Legacy Firehose users should migrate to the FH API."'
+  sunset_date: null
+  migration_notes:
+  - Legacy delivered XML in ZIP files over FTP; the FH API is a REST cursor feed returning enriched JSON.
+deprecation_policy:
+  published: true
+  form: inline documentation notice per product
+  url: https://docs.webz.io/docs/webz/web-content
+  sunset_rfc8594: false
+  notice_period: not stated
+  note: >-
+    Webz.io does mark deprecated products clearly, name the replacement, and document the exact field
+    renames a migrator needs — but it publishes no standalone deprecation policy, no notice period and
+    no sunset date, and emits neither the RFC 8594 Sunset header nor a Deprecation header.
+status_page:
+  url: https://status.webz.io
+  http_status: 200
+  verified: '2026-08-27'
+  linked_from: https://webz.io/trust
+  machine_readable_feed: not published
+changelog:
+  published: false
+  probes:
+  - url: https://docs.webz.io/docs/webz/changelog
+    status: 200
+    note: Returns the docs 404 shell — navigation and footer only, no dated entries.
+  - url: https://docs.webz.io/markdown/webz/changelog
+    status: 404
+  - url: https://docs.webz.io/changelog
+    status: 404
+  - url: https://webz.io/changelog
+    status: 404
+sla:
+  published: false
+  note: No public SLA document was found. Enterprise terms are handled through sales.
+support_channels:
+- support@webz.io — News/Blogs/Forums, Reviews, credits, rate-limit increases
+- sales@webz.io — Cyber, Data Breaches, Archive credits, product access
+- https://webz.io/contact-us
+data_coverage_windows:
+  note: Retention/history limits are a lifecycle fact for a data API — these are the published windows.
+  news_blogs_forums: 31 days by default; longer with allowNewsHistory at extra credit cost
+  segmentation: 31 days maximum; allowNewsHistory does not apply
+  cyber: 2-year history cap
+  data_breaches: 365 days by default; raw=true lifts the one-year limit under a restricted parameter set
+  news_search: 7 days by default, up to 30 via days, or the full window via allow_all_dates
+  archive: 5 years back via the API; data dumps reach back to 2008
+  archive_download_link_validity: 7 days

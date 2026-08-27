@@ -1,0 +1,17 @@
+generated: '2026-08-27'
+method: searched
+source: https://docs.webz.io/docs/webz/news-search-api-skill
+note: >-
+  Webz.io publishes its own Agent Skill file inside the documentation. It is saved verbatim rather
+  than generated. This is the only skill the provider publishes.
+skills:
+- name: webz-news-search
+  file: webz-news-search.md
+  description: Search global news with the Webz.io news_search_by_webz MCP tool.
+  api: Webz.io News Search API
+  method: searched
+  source: https://docs.webz.io/docs/webz/news-search-api-skill
+  operations:
+  - news_search_by_webz
+  requires:
+    mcp_endpoint: https://news-search-mcp.webz.io/mcp
