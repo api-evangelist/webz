@@ -1,0 +1,58 @@
+name: Webz.io
+description: >-
+  Webz.io provides structured web-data feeds and APIs covering the open, deep, and dark web for AI, cybersecurity, and
+  intelligence use cases. Content is collected at scale, normalized, enriched with metadata, and delivered through
+  machine-readable data feeds and token-authenticated REST APIs.
+url: https://raw.githubusercontent.com/api-evangelist/webz-io-news-open-web-dark-web-apis-for-ai/refs/heads/main/apis.yml
+created: '2026-08-27'
+modified: '2026-08-27'
+specificationVersion: '0.21'
+tags:
+  - news-data
+  - web-data
+  - web-scraping
+  - dark-web
+  - deep-web
+  - cybersecurity
+  - threat-intelligence
+  - data-breach
+  - pii-monitoring
+  - osint
+  - reviews-data
+  - ai-training-data
+  - media-monitoring
+apis:
+  - name: Webz.io API
+    description: >-
+      Token-authenticated HTTP GET REST endpoints under https://api.webz.io/ covering News/Blogs/Forums & Reviews, Cyber
+      (dark web), Data Breaches, and segmentation. Returns JSON. Includes a free News API Lite tier. An OpenAPI contract
+      and Markdown docs index are exposed via llms.txt for AI agents.
+    humanURL: https://docs.webz.io/reference
+    baseURL: https://api.webz.io/
+    tags:
+      - news-data
+      - web-data
+      - web-scraping
+      - dark-web
+      - deep-web
+      - cybersecurity
+      - threat-intelligence
+      - data-breach
+      - pii-monitoring
+      - osint
+      - reviews-data
+      - ai-training-data
+      - media-monitoring
+    properties:
+      - type: Documentation
+        url: https://docs.webz.io/docs/webz
+      - type: LLMsTxt
+        url: https://docs.webz.io/llms.txt
+maintainers:
+  - FN: Webz.io
+    url: https://webz.io
+generated:
+  by: apis.io/add
+  model: claude-opus-4-8
+  confidence: 90
+  at: '2026-08-27T16:18:08.826Z'
