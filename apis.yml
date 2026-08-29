@@ -3,6 +3,17 @@ description: Webz.io provides structured web-data feeds and APIs covering the op
   and intelligence use cases. Content is collected at scale, normalized, enriched with metadata, and delivered through machine-readable
   data feeds and token-authenticated REST APIs.
 url: https://raw.githubusercontent.com/api-evangelist/webz-io-news-open-web-dark-web-apis-for-ai/refs/heads/main/apis.yml
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 created: '2026-08-27'
 modified: '2026-08-27'
 specificationVersion: '0.21'
