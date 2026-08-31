@@ -1,0 +1,14 @@
+{
+  "repo": "webz",
+  "feeds": [
+    {
+      "source": "https://webz.io/contact-us",
+      "feed_url": "https://webz.io/feed/",
+      "title": "",
+      "saved": 3,
+      "method": "discovered"
+    }
+  ],
+  "post_count": 3,
+  "fetched": "2026-08-30T22:33:40Z"
+}

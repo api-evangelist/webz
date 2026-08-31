@@ -18,6 +18,20 @@ created: '2026-08-27'
 modified: '2026-08-27'
 specificationVersion: '0.21'
 tags:
+- News Data
+- Web Data
+- Web Scraping
+- Dark Web
+- deep-web
+- Cybersecurity
+- Threat Intelligence
+- Data Breach
+- pii-monitoring
+- OSINT
+- reviews-data
+- AI Training Data
+- Media Monitoring
+tags_raw:
 - news-data
 - web-data
 - web-scraping
@@ -49,6 +63,20 @@ apis:
   humanURL: https://docs.webz.io/docs/webz
   baseURL: https://api.webz.io
   tags:
+  - News Data
+  - Web Data
+  - Web Scraping
+  - Dark Web
+  - deep-web
+  - Cybersecurity
+  - Threat Intelligence
+  - Data Breach
+  - pii-monitoring
+  - OSINT
+  - reviews-data
+  - AI Training Data
+  - Media Monitoring
+  tags_raw:
   - news-data
   - web-data
   - web-scraping
@@ -93,6 +121,11 @@ apis:
   humanURL: https://news-search-mcp.webz.io
   baseURL: https://news-search-mcp.webz.io/mcp
   tags:
+  - MCP
+  - News Data
+  - AI Agents
+  - News Search
+  tags_raw:
   - mcp
   - news-data
   - ai-agents
