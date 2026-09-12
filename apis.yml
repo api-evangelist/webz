@@ -171,6 +171,8 @@ generated:
   at: '2026-08-27T16:18:08.826Z'
 aid: webz
 common:
+- type: Website
+  url: https://www.webz.io/
 - type: DomainSecurity
   url: security/webz-domain-security.yml
 - type: WellKnown
