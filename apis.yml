@@ -1,7 +1,5 @@
 name: Webz.io
-description: Webz.io provides structured web-data feeds and APIs covering the open, deep, and dark web for AI, cybersecurity,
-  and intelligence use cases. Content is collected at scale, normalized, enriched with metadata, and delivered through machine-readable
-  data feeds and token-authenticated REST APIs.
+description: Webz.io provides structured web-data feeds and APIs covering the open, deep, and dark web for AI, cybersecurity, and intelligence use cases. Content is collected at scale, normalized, enriched with metadata, and delivered through machine-readable data feeds and token-authenticated REST APIs.
 url: https://raw.githubusercontent.com/api-evangelist/webz-io-news-open-web-dark-web-apis-for-ai/refs/heads/main/apis.yml
 deliveryModel:
   model: saas
@@ -63,19 +61,10 @@ tags_raw:
 - media-monitoring
 apis:
 - name: Webz.io API
-  description: 'Token-authenticated REST endpoints under https://api.webz.io covering seven products: News, Blogs and Forums
-    (/api/news, /api/blogs, /api/forums plus /seg_api/* segmentation), Reviews (/reviewFilter, /reviewSeg), Cyber for deep
-    and dark web (/cyberFilter, /cyberSeg, /dark-cache, /cyber-image), Data Breaches (/breaches, /breachCatalog), the Firehose
-    FH API (/firehose), the semantic News Search API (POST /api/news/context), and the Archive order flow on app.webz.io.
-    All are GET except News Search. Responses are a JSON envelope wrapping a result array plus an opaque next cursor. A free
-    News API Lite tier gives 1,000 non-commercial calls a month.
+  description: 'Token-authenticated REST endpoints under https://api.webz.io covering seven products: News, Blogs and Forums (/api/news, /api/blogs, /api/forums plus /seg_api/* segmentation), Reviews (/reviewFilter, /reviewSeg), Cyber for deep and dark web (/cyberFilter, /cyberSeg, /dark-cache, /cyber-image), Data Breaches (/breaches, /breachCatalog), the Firehose FH API (/firehose), the semantic News Search API (POST /api/news/context), and the Archive order flow on app.webz.io. All are GET except News Search. Responses are a JSON envelope wrapping a result array plus an opaque next cursor. A free News API Lite tier gives 1,000 non-commercial calls a month.
 
 
-    NO OpenAPI, Swagger, GraphQL, AsyncAPI, WSDL or apis.json contract is published. Re-probed 2026-08-27 across api.webz.io,
-    webz.io and docs.webz.io: /openapi.json, /openapi.yaml, /swagger.json, /api-docs, /docs, /reference and /apis.json all
-    404. WHAT IS PUBLISHED and is new since the last pass: a first-party remote MCP server at https://news-search-mcp.webz.io/mcp
-    with RFC 8414 and RFC 9728 discovery metadata (both probed 200), a provider-authored Agent Skill file, and a 20KB llms.txt
-    indexing every docs page with a Markdown twin. The machine-readable surface here is agent-native rather than OpenAPI-native.'
+    NO OpenAPI, Swagger, GraphQL, AsyncAPI, WSDL or apis.json contract is published. Re-probed 2026-08-27 across api.webz.io, webz.io and docs.webz.io: /openapi.json, /openapi.yaml, /swagger.json, /api-docs, /docs, /reference and /apis.json all 404. WHAT IS PUBLISHED and is new since the last pass: a first-party remote MCP server at https://news-search-mcp.webz.io/mcp with RFC 8414 and RFC 9728 discovery metadata (both probed 200), a provider-authored Agent Skill file, and a 20KB llms.txt indexing every docs page with a Markdown twin. The machine-readable surface here is agent-native rather than OpenAPI-native.'
   humanURL: https://docs.webz.io/docs/webz
   baseURL: https://api.webz.io
   tags:
@@ -128,12 +117,7 @@ apis:
   - type: Conventions
     url: conventions/webz-conventions.yml
 - name: Webz.io News Search MCP Server
-  description: A first-party remote Model Context Protocol server that exposes Webz.io semantic news search to any MCP client.
-    It ships one tool, news_search_by_webz, and every call runs a regular News Search API request against the caller's own
-    Webz token, so the same credits and per-token rate limits apply. Authentication is a Bearer API token; Claude.ai and ChatGPT
-    connect over OAuth, and the server publishes RFC 8414 authorization-server metadata and RFC 9728 protected-resource metadata
-    (both probed 200 on 2026-08-27) with PKCE S256 and dynamic client registration. An anonymous tools/list returns 401 with
-    a correctly-formed WWW-Authenticate challenge, which the provider documents as intentional.
+  description: A first-party remote Model Context Protocol server that exposes Webz.io semantic news search to any MCP client. It ships one tool, news_search_by_webz, and every call runs a regular News Search API request against the caller's own Webz token, so the same credits and per-token rate limits apply. Authentication is a Bearer API token; Claude.ai and ChatGPT connect over OAuth, and the server publishes RFC 8414 authorization-server metadata and RFC 9728 protected-resource metadata (both probed 200 on 2026-08-27) with PKCE S256 and dynamic client registration. An anonymous tools/list returns 401 with a correctly-formed WWW-Authenticate challenge, which the provider documents as intentional.
   humanURL: https://news-search-mcp.webz.io
   baseURL: https://news-search-mcp.webz.io/mcp
   tags:
@@ -160,6 +144,146 @@ apis:
     url: scopes/webz-scopes.yml
   - type: Authentication
     url: authentication/webz-authentication.yml
+- name: Webz.io News, Blogs & Forums API
+  description: Live open-web content split by source type. One base URL, six GET endpoints (`/api/news`, `/api/blogs`, `/api/forums` for posts and `/seg_api/news`, `/seg_api/blogs`, `/seg_api/forums` for aggregate segmentation), one API token.
+  humanURL: https://docs.webz.io/docs/webz/news-blogs-forums
+  baseURL: https://api.webz.io
+  tags:
+  - News
+  - Blogs
+  - Forums
+  - Open Web
+  properties:
+  - type: Documentation
+    url: https://docs.webz.io/docs/webz/news-blogs-forums
+  - type: APIReference
+    url: https://docs.webz.io/docs/webz/news-blogs-forums-api-reference
+- name: Webz.io News Search API
+  description: Contextual, natural-language news search. Single `POST /api/news/context` endpoint that returns ranked article excerpts matching a free-text query. Backs the hosted News Search MCP server and the LangChain / LlamaIndex / n8n SDKs.
+  humanURL: https://docs.webz.io/docs/webz/news-search
+  baseURL: https://api.webz.io
+  tags:
+  - News Search
+  - Semantic Search
+  - AI
+  properties:
+  - type: Documentation
+    url: https://docs.webz.io/docs/webz/news-search
+  - type: APIReference
+    url: https://docs.webz.io/docs/webz/news-search-api-reference
+- name: Webz.io Cyber API
+  description: Deep and dark web content for threat intelligence. Search endpoint `/cyberFilter`, segmentation `/cyberSeg`, and helper endpoints `/dark-cache` (cached page snapshots) and `/cyber-image` (collected images).
+  humanURL: https://docs.webz.io/docs/webz/cyber-api
+  baseURL: https://api.webz.io
+  tags:
+  - Cyber
+  - Dark Web
+  - Threat Intelligence
+  properties:
+  - type: Documentation
+    url: https://docs.webz.io/docs/webz/cyber-api
+  - type: APIReference
+    url: https://docs.webz.io/docs/webz/cyber-api-reference
+- name: Webz.io Data Breaches API
+  description: Search compromised records and look up known breaches. Two GET endpoints, `/breaches` (main search) and `/breachCatalog` (breach lookup by name to UUID), authenticated with an API token as a query parameter.
+  humanURL: https://docs.webz.io/docs/webz/data-breach-api
+  baseURL: https://api.webz.io
+  tags:
+  - Data Breach
+  - Credentials
+  - Cyber Intelligence
+  properties:
+  - type: Documentation
+    url: https://docs.webz.io/docs/webz/data-breach-api
+  - type: APIReference
+    url: https://docs.webz.io/docs/webz/data-breach-reference
+- name: Webz.io Leaked Cookies API
+  description: Look up leaked session cookies matched to a domain. Single GET endpoint `/cookies` with token authentication and domain-scoped credit consumption.
+  humanURL: https://docs.webz.io/docs/webz/leaked-cookies-api
+  baseURL: https://api.webz.io
+  tags:
+  - Leaked Cookies
+  - Session Hijacking
+  - Cyber Intelligence
+  properties:
+  - type: Documentation
+    url: https://docs.webz.io/docs/webz/leaked-cookies-api
+  - type: APIReference
+    url: https://docs.webz.io/docs/webz/leaked-cookies-reference
+- name: Webz.io Non-Human Identities (NHI) API
+  description: Detect leaked machine credentials (API keys, tokens, secrets) tied to a domain. Single GET endpoint `/nhi` with token authentication.
+  humanURL: https://docs.webz.io/docs/webz/nhi-api
+  baseURL: https://api.webz.io
+  tags:
+  - Non-Human Identities
+  - Secrets
+  - Cyber Intelligence
+  properties:
+  - type: Documentation
+    url: https://docs.webz.io/docs/webz/nhi-api
+  - type: APIReference
+    url: https://docs.webz.io/docs/webz/nhi-reference
+- name: Webz.io Firehose API
+  description: REST-delivered curated firehose of enriched open-web posts. Preconfigured per-customer feeds via `/firehose?token=&client_feed=`; paginated with `nextPage`. Successor to the FTP-based Legacy Firehose.
+  humanURL: https://docs.webz.io/docs/webz/firehose
+  baseURL: https://api.webz.io
+  tags:
+  - Firehose
+  - Streaming
+  - Web Data
+  properties:
+  - type: Documentation
+    url: https://docs.webz.io/docs/webz/firehose
+- name: Webz.io Archive API
+  description: Build and deliver historical datasets in three steps - set query and date range at `/setArchiveQuery`, confirm at `/confirmArchiveQuery`, then poll `/getArchiveOrderStatus` for the ZIP download link. Uses prepaid credits.
+  humanURL: https://docs.webz.io/docs/webz/archive
+  baseURL: https://app.webz.io
+  tags:
+  - Archive
+  - Historical Data
+  - Datasets
+  properties:
+  - type: Documentation
+    url: https://docs.webz.io/docs/webz/archive
+  - type: APIReference
+    url: https://docs.webz.io/docs/webz/archive-api-reference
+- name: Webz.io Reviews API
+  description: Customer reviews and ratings collected from across the open web as structured JSON - rating, author, language, and the item being reviewed. Shares the News/Blogs/Forums query language but is a separate product surface.
+  humanURL: https://docs.webz.io/docs/webz/reviews-api
+  baseURL: https://api.webz.io
+  tags:
+  - Reviews
+  - Ratings
+  - Web Data
+  properties:
+  - type: Documentation
+    url: https://docs.webz.io/docs/webz/reviews-api
+- name: Webz.io Domain Exposure API (DEA)
+  description: Analyze a domain's exposure across breach, leaked-cookie, and NHI datasets. Served from `api.lunarcyber.com` (Webz.io's Lunar-branded cyber intelligence surface); single GET endpoint `/domain-exposure?domain=`.
+  humanURL: https://docs.webz.io/docs/webz/domain-exposure-api
+  baseURL: https://api.lunarcyber.com
+  tags:
+  - Domain Exposure
+  - Cyber Intelligence
+  - Attack Surface
+  properties:
+  - type: Documentation
+    url: https://docs.webz.io/docs/webz/domain-exposure-api
+  - type: APIReference
+    url: https://docs.webz.io/docs/webz/dea-api-reference
+- name: Webz.io Web Content API (deprecated)
+  description: Legacy unified `/filterWebContent` endpoint (GET or POST) that returned any open-web content type in one call. Deprecated in favor of the split News, Blogs & Forums APIs but still documented.
+  humanURL: https://docs.webz.io/docs/webz/web-content
+  baseURL: https://api.webz.io
+  tags:
+  - Web Content
+  - Legacy
+  - Deprecated
+  properties:
+  - type: Documentation
+    url: https://docs.webz.io/docs/webz/web-content
+  - type: APIReference
+    url: https://docs.webz.io/docs/webz/web-content-endpoint
 maintainers:
 - FN: Webz.io
   url: https://webz.io
@@ -171,6 +295,8 @@ generated:
   at: '2026-08-27T16:18:08.826Z'
 aid: webz
 common:
+- type: HelpCenter
+  url: https://webz.io/help/
 - type: Website
   url: https://www.webz.io/
 - type: DomainSecurity
