@@ -150,6 +150,11 @@ apis:
   baseURL: https://api.webz.io
   tags:
   - News
+  - Blog
+  - Forums
+  - Open Web
+  tags_raw:
+  - News
   - Blogs
   - Forums
   - Open Web
@@ -163,6 +168,10 @@ apis:
   humanURL: https://docs.webz.io/docs/webz/news-search
   baseURL: https://api.webz.io
   tags:
+  - News Search
+  - Semantic Search
+  - Artificial Intelligence
+  tags_raw:
   - News Search
   - Semantic Search
   - AI
@@ -239,6 +248,10 @@ apis:
   humanURL: https://docs.webz.io/docs/webz/archive
   baseURL: https://app.webz.io
   tags:
+  - Archives
+  - Historical Data
+  - Datasets
+  tags_raw:
   - Archive
   - Historical Data
   - Datasets
