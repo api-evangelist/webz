@@ -108,3 +108,46 @@ notes:
   each Open Web product — which makes cost genuinely predictable for an agent.
 - Cyber and Data Breaches publish no price, no quota and no self-service signup, so an agent cannot
   plan spend on the dark-web half of the catalog from public information.
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - free
+  units: []
+  plans:
+  - name: Free
+    access: other
+    model: free
+    model_how: derived
+    units: []
+    periods: []
+  - name: Scale
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods: []
+  - name: High Volume
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods: []
+  - name: Dark Web API
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods: []
+  - name: Data Breach API
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods: []
+  - name: News API Lite
+    access: other
+    model: free
+    model_how: derived
+    units: []
+    periods: []
