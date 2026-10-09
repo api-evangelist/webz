@@ -99,3 +99,16 @@ x-evidence:
 - url: https://news-search-mcp.webz.io/
   http_status: 200
   note: Public landing page with per-client setup walkthroughs; header reads "MCP Server Online".
+rfc9728:
+  endpoint: https://news-search-mcp.webz.io/mcp
+  metadata_url: https://news-search-mcp.webz.io/.well-known/oauth-protected-resource/mcp
+  discovered_via: WWW-Authenticate resource_metadata on an anonymous POST initialize
+  fetched: '2026-09-25'
+  http_status: 200
+  content_type: application/json
+  document:
+    resource: https://news-search-mcp.webz.io/mcp
+    authorization_servers:
+    - https://news-search-mcp.webz.io/
+    bearer_methods_supported:
+    - header
