@@ -39,7 +39,7 @@ tags:
 - deep-web
 - Cybersecurity
 - Threat Intelligence
-- Data Breach
+- Data Breaches
 - pii-monitoring
 - OSINT
 - reviews-data
@@ -75,7 +75,7 @@ apis:
   - deep-web
   - Cybersecurity
   - Threat Intelligence
-  - Data Breach
+  - Data Breaches
   - pii-monitoring
   - OSINT
   - reviews-data
@@ -198,6 +198,10 @@ apis:
   humanURL: https://docs.webz.io/docs/webz/data-breach-api
   baseURL: https://api.webz.io
   tags:
+  - Data Breaches
+  - Credentials
+  - Cyber Intelligence
+  tags_raw:
   - Data Breach
   - Credentials
   - Cyber Intelligence
